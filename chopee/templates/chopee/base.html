@@ -1,0 +1,285 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chopee - Premium Store</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'chopee/css/style.css' %}">
+</head>
+<body>
+    <!-- Top Alert Notification Bar -->
+    <div class="top-promo-bar">
+        <span>✨ Welcome to Chopee Premium! Use Code <strong class="coupon-tag">SHOPEE50</strong> for 50% OFF your entire order! Free shipping nationwide! ✨</span>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Top Navbar -->
+            <div class="top-nav">
+                <div class="top-nav-left">
+                    <a href="#">Seller Centre</a>
+                    <span class="nav-divider">|</span>
+                    <a href="#">Start Selling</a>
+                    <span class="nav-divider">|</span>
+                    <a href="#">Download App</a>
+                    <span class="nav-divider">|</span>
+                    <span class="follow-text">Follow us on</span>
+                    <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                </div>
+                <div class="top-nav-right">
+                    <a href="#" class="nav-link-btn"><i class="far fa-bell"></i> Notifications</a>
+                    <a href="#" class="nav-link-btn"><i class="far fa-question-circle"></i> Help</a>
+                    <a href="#" class="nav-link-btn"><i class="fas fa-globe"></i> English <i class="fas fa-chevron-down text-xs"></i></a>
+                    <span class="nav-divider">|</span>
+                    <div class="user-menu">
+                        <i class="far fa-user-circle"></i>
+                        <span>Guest User</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Header (Logo, Search, Cart) -->
+            <div class="mid-header">
+                <!-- Logo -->
+                <a href="{% url 'chopee:home' %}" class="brand-logo">
+                    <i class="fas fa-shopping-bag logo-icon"></i>
+                    <span class="logo-text">Chopee</span>
+                </a>
+
+                <!-- Search Bar Section -->
+                <div class="search-section">
+                    <form action="{% url 'chopee:home' %}" method="GET" class="search-form">
+                        <div class="search-input-wrapper">
+                            <input type="text" name="q" placeholder="Search for premium products, brands and shops" value="{{ query|default:'' }}" autocomplete="off" id="search-input">
+                            <!-- Search suggestions -->
+                            <div class="search-suggestions" id="search-suggestions">
+                                <div class="suggestion-item">iPhone 15 Pro Max</div>
+                                <div class="suggestion-item">Sony Noise Cancelling Headphones</div>
+                                <div class="suggestion-item">Premium Leather Bag</div>
+                                <div class="suggestion-item">Ergonomic Office Chair</div>
+                                <div class="suggestion-item">Skincare Set</div>
+                            </div>
+                        </div>
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    <!-- Quick Keywords -->
+                    <div class="quick-keywords">
+                        <a href="?q=iPhone">iPhone</a>
+                        <a href="?q=Headphones">Headphones</a>
+                        <a href="?q=Hoodie">Hoodie</a>
+                        <a href="?q=Sneakers">Sneakers</a>
+                        <a href="?q=Moisturizer">Moisturizer</a>
+                        <a href="?q=Chair">Chair</a>
+                    </div>
+                </div>
+
+                <!-- Shopping Cart Icon -->
+                <div class="cart-icon-wrapper" id="cart-trigger">
+                    <div class="cart-icon-btn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-badge" id="cart-badge">{{ cart_count|default:0 }}</span>
+                    </div>
+                    <!-- Hover Cart Preview Dropdown -->
+                    <div class="cart-preview-dropdown" id="cart-preview">
+                        <div class="cart-preview-header">Recently Added Products</div>
+                        <div class="cart-preview-items" id="cart-preview-items">
+                            <!-- Populated by JS -->
+                            <div class="empty-cart-message">
+                                <i class="fas fa-shopping-basket"></i>
+                                <p>Your shopping cart is empty</p>
+                            </div>
+                        </div>
+                        <div class="cart-preview-footer">
+                            <span class="cart-preview-count"><span id="cart-preview-qty">0</span> Items</span>
+                            <button class="view-cart-btn">View My Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Global Cart Drawer (Slide-out) -->
+    <div class="cart-drawer-overlay" id="cart-drawer-overlay"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-drawer-header">
+            <h3>Shopping Cart (<span id="cart-drawer-count">0</span>)</h3>
+            <button class="close-drawer-btn" id="close-cart-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-drawer-items" id="cart-drawer-items">
+            <!-- Dynamic Cart Items -->
+        </div>
+        <div class="cart-drawer-summary">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="cart-original-total">฿0.00</span>
+            </div>
+            <div class="summary-row savings-row">
+                <span>Total Savings</span>
+                <span id="cart-savings">-฿0.00</span>
+            </div>
+            <div class="summary-row coupon-applied-row" id="coupon-row" style="display: none;">
+                <span>Coupon Applied (<span id="coupon-display-code"></span>)</span>
+                <span id="coupon-discount-val">-฿0.00</span>
+            </div>
+            
+            <!-- Coupon Input -->
+            <div class="coupon-section">
+                <input type="text" id="coupon-input" placeholder="Enter Coupon Code">
+                <button class="premium-btn-outline" id="apply-coupon-btn">Apply</button>
+            </div>
+            <div id="coupon-status-msg"></div>
+
+            <div class="summary-row grand-total">
+                <span>Total Amount</span>
+                <span id="cart-grand-total" class="text-brand">฿0.00</span>
+            </div>
+            
+            <button class="premium-btn checkout-btn" id="checkout-trigger-btn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal-overlay" id="checkout-modal-overlay"></div>
+    <div class="checkout-modal" id="checkout-modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-map-marker-alt"></i> Checkout Details</h3>
+            <button class="close-modal-btn" id="close-checkout-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="checkout-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="checkout-name">Full Name</label>
+                <input type="text" id="checkout-name" required placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label for="checkout-phone">Phone Number</label>
+                <input type="tel" id="checkout-phone" required placeholder="089-123-4567">
+            </div>
+            <div class="form-group">
+                <label for="checkout-address">Delivery Address</label>
+                <textarea id="checkout-address" required placeholder="123 Main St, Bangkok" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Payment Method</label>
+                <div class="payment-methods">
+                    <label class="payment-option checked">
+                        <input type="radio" name="payment_method" value="COD" checked>
+                        <i class="fas fa-money-bill-wave text-green"></i> Cash on Delivery
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="PromptPay">
+                        <i class="fas fa-qrcode text-brand"></i> PromptPay QR
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="CreditCard">
+                        <i class="far fa-credit-card text-primary"></i> Credit / Debit Card
+                    </label>
+                </div>
+            </div>
+            <div class="checkout-final-summary">
+                <span>Order Total:</span>
+                <strong class="text-brand text-xl" id="checkout-summary-total">฿0.00</strong>
+            </div>
+            <button type="submit" class="premium-btn place-order-btn">Place Order (฿<span id="place-order-total-btn">0.00</span>)</button>
+        </form>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="success-modal-overlay"></div>
+    <div class="success-modal" id="success-modal">
+        <div class="success-icon-wrapper">
+            <i class="fas fa-check"></i>
+        </div>
+        <h2>Order Successful!</h2>
+        <p>Thank you for shopping with us. Your Order ID is <strong id="success-order-id">#1000</strong>.</p>
+        <p class="success-amount">Total Paid: <span id="success-total-price">฿0.00</span></p>
+        <div class="delivery-indicator">
+            <div class="ind-step active"><i class="fas fa-box"></i><span>Packed</span></div>
+            <div class="ind-line"></div>
+            <div class="ind-step"><i class="fas fa-truck"></i><span>Shipping</span></div>
+            <div class="ind-line"></div>
+            <div class="ind-step"><i class="fas fa-home"></i><span>Delivered</span></div>
+        </div>
+        <button class="premium-btn-outline" style="width: 100%" id="success-close-btn">Continue Shopping</button>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-column">
+                <h4>Customer Service</h4>
+                <a href="#">Help Centre</a>
+                <a href="#">How To Buy</a>
+                <a href="#">Payment Methods</a>
+                <a href="#">Chopee Coins</a>
+                <a href="#">Order Tracking</a>
+                <a href="#">Return & Refund</a>
+            </div>
+            <div class="footer-column">
+                <h4>About Chopee</h4>
+                <a href="#">About Us</a>
+                <a href="#">Careers</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Seller Centre</a>
+                <a href="#">Flash Deals</a>
+                <a href="#">Media Contact</a>
+            </div>
+            <div class="footer-column">
+                <h4>Payment</h4>
+                <div class="payment-logos">
+                    <i class="fab fa-cc-visa"></i>
+                    <i class="fab fa-cc-mastercard"></i>
+                    <i class="fab fa-cc-paypal"></i>
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <h4 style="margin-top: 30px;">Logistics</h4>
+                <div class="payment-logos">
+                    <i class="fas fa-truck"></i>
+                    <i class="fas fa-shipping-fast"></i>
+                    <i class="fas fa-plane-departure"></i>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h4>Download App</h4>
+                <div class="download-qr-app">
+                    <div class="qr-code">
+                        <i class="fas fa-qrcode" style="font-size: 80px; color: #0f172a;"></i>
+                    </div>
+                    <div class="app-links">
+                        <a href="#"><i class="fab fa-apple"></i> App Store</a>
+                        <a href="#"><i class="fab fa-google-play"></i> Google Play</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Chopee Premium. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="{% static 'chopee/js/main.js' %}"></script>
+</body>
+</html>

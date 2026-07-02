@@ -1,0 +1,242 @@
+{% extends 'chopee/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="home-container">
+    <!-- Hero Banners Section -->
+    <div class="hero-banners-section">
+        <!-- Main Carousel (Slider) -->
+        <div class="carousel-container">
+            <div class="carousel-slide active">
+                <div class="carousel-content gradient-warm">
+                    <div class="premium-text-panel">
+                        <span class="premium-badge">Super Brand Day</span>
+                        <h1>Elevate Your Lifestyle</h1>
+                        <p>Discover premium selections up to 80% off. Authenticity guaranteed on top international brands.</p>
+                        <button class="premium-btn">Shop Collection</button>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-slide">
+                <div class="carousel-content gradient-peach">
+                    <div class="premium-text-panel">
+                        <span class="premium-badge">New Arrivals</span>
+                        <h1>Minimalist Fashion</h1>
+                        <p>Upgrade your wardrobe with our latest elegant and comfortable summer collections.</p>
+                        <button class="premium-btn">Discover More</button>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-slide">
+                <div class="carousel-content gradient-clean">
+                    <div class="premium-text-panel">
+                        <span class="premium-badge">Tech & Gadgets</span>
+                        <h1>Smart Living</h1>
+                        <p>Enhance your home with cutting-edge smart devices at unbeatable prices.</p>
+                        <button class="premium-btn">Claim Vouchers</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dots Nav -->
+            <div class="carousel-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+
+        <!-- Right Side Mini Promos -->
+        <div class="mini-promos-container">
+            <div class="mini-promo-card">
+                <div class="mini-text">
+                    <h3>Free Shipping</h3>
+                    <p>Min. Spend ฿0</p>
+                </div>
+                <i class="fas fa-truck-fast promo-icon"></i>
+            </div>
+            <div class="mini-promo-card">
+                <div class="mini-text">
+                    <h3>100% Authentic</h3>
+                    <p>Money Back Guarantee</p>
+                </div>
+                <i class="fas fa-shield-alt promo-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Circular Grid -->
+    <div class="home-section category-section">
+        <h2 class="section-title">Shop by Category</h2>
+        <div class="categories-grid">
+            <a href="{% url 'chopee:home' %}" class="category-circle-item {% if not category_slug %}active{% endif %}">
+                <div class="premium-circle">
+                    <i class="fas fa-border-all"></i>
+                </div>
+                <span>All Items</span>
+            </a>
+            {% for cat in categories %}
+            <a href="?category={{ cat.slug }}{% if query %}&q={{ query }}{% endif %}" class="category-circle-item {% if category_slug == cat.slug %}active{% endif %}">
+                <div class="premium-circle">
+                    <i class="fas {{ cat.icon }}"></i>
+                </div>
+                <span>{{ cat.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Flash Sale Section -->
+    <div class="home-section flash-sale-section">
+        <div class="flash-sale-header">
+            <div class="flash-title-wrapper">
+                <span class="flash-text">Flash Sale ⚡</span>
+                <!-- Timer -->
+                <div class="flash-timer" id="flash-timer">
+                    <span class="time-block" id="timer-hour">01</span>:
+                    <span class="time-block" id="timer-min">59</span>:
+                    <span class="time-block" id="timer-sec">45</span>
+                </div>
+            </div>
+            <a href="#" class="view-all-link">View All <i class="fas fa-chevron-right text-xs"></i></a>
+        </div>
+        <div class="flash-products-container">
+            {% for fp in flash_sales %}
+            <div class="flash-product-card premium-card" onclick="openProductDetail({{ fp.id }})">
+                <!-- Discount tag -->
+                {% if fp.discount_price %}
+                <div class="premium-discount-badge">
+                    -{{ fp.discount_percent }}%
+                </div>
+                {% endif %}
+                <!-- Image -->
+                <div class="flash-img-wrapper">
+                    <img src="{{ fp.image }}" alt="{{ fp.name }}">
+                </div>
+                <!-- Price -->
+                <div class="flash-price-wrapper">
+                    {% if fp.discount_price %}
+                    <span>฿{{ fp.discount_price|floatformat:0 }}</span>
+                    {% else %}
+                    <span>฿{{ fp.price|floatformat:0 }}</span>
+                    {% endif %}
+                </div>
+                <!-- Progress bar -->
+                <div class="premium-progress">
+                    <div class="premium-fill" style="width: {% widthratio fp.sales_count fp.stock 100 %}%"></div>
+                    <span class="progress-text">{{ fp.sales_count }} Sold</span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted" style="padding: 20px;">No active flash sales right now.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Daily Discover - Products Grid -->
+    <div class="home-section discover-section">
+        <div class="discover-header">
+            <h2 class="section-title text-brand">Daily Discover</h2>
+            
+            <!-- Filters & Sorting Options -->
+            <div class="sorting-controls">
+                <span class="text-secondary">Sort By:</span>
+                <a href="?sort=newest{% if category_slug %}&category={{ category_slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="premium-sort-btn {% if sort_by == 'newest' or not sort_by %}active{% endif %}">Latest</a>
+                <a href="?sort=sales{% if category_slug %}&category={{ category_slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="premium-sort-btn {% if sort_by == 'sales' %}active{% endif %}">Top Sales</a>
+                <div class="sort-price-dropdown">
+                    <span class="premium-sort-btn {% if sort_by == 'price_asc' or sort_by == 'price_desc' %}active{% endif %}">
+                        Price
+                        <i class="fas fa-chevron-down text-xs" style="margin-left: 4px;"></i>
+                    </span>
+                    <div class="price-dropdown-content">
+                        <a href="?sort=price_asc{% if category_slug %}&category={{ category_slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Price: Low to High</a>
+                        <a href="?sort=price_desc{% if category_slug %}&category={{ category_slug }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Price: High to Low</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if query or category_slug %}
+        <div class="active-filters-info">
+            <span>Showing results for: 
+                {% if query %}Search: "<strong class="text-brand">{{ query }}</strong>"{% endif %}
+                {% if category_slug %}Category: "<strong class="text-brand">{{ category_slug }}</strong>"{% endif %}
+            </span>
+            <a href="{% url 'chopee:home' %}" class="clear-filters-btn"><i class="fas fa-times-circle"></i> Clear Filters</a>
+        </div>
+        {% endif %}
+
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card premium-card">
+                <!-- Header badges -->
+                <div class="product-card-badges">
+                    <span class="mall-badge">Mall</span>
+                    {% if product.discount_price %}
+                    <span class="discount-badge-side">Sale</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Main Product Link wrapper -->
+                <div onclick="openProductDetail({{ product.id }})" class="product-card-link">
+                    <!-- Image -->
+                    <div class="product-image-wrapper">
+                        <img src="{{ product.image }}" alt="{{ product.name }}">
+                    </div>
+                    <!-- Details -->
+                    <div class="product-info-wrapper">
+                        <h3 class="product-title">{{ product.name }}</h3>
+                        
+                        <!-- Pricing -->
+                        <div class="product-pricing">
+                            {% if product.discount_price %}
+                            <span class="price-original">฿{{ product.price|floatformat:2 }}</span>
+                            <span class="price-discount">฿{{ product.discount_price|floatformat:2 }}</span>
+                            {% else %}
+                            <span class="price-discount">฿{{ product.price|floatformat:2 }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Rating & Sales -->
+                        <div class="product-rating-row">
+                            <div class="stars-rating">
+                                <i class="fas fa-star"></i>
+                                <span>{{ product.rating }}</span>
+                            </div>
+                            <span class="nav-divider" style="margin: 0 8px; font-size: 0.8rem;">|</span>
+                            <span>{{ product.sales_count }} sold</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add to Cart quick button on card -->
+                <div class="product-card-actions">
+                    <button class="premium-btn-outline quick-add-cart-btn" onclick="addToCartDirect({{ product.id }}, '{{ product.name }}')">
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-products-found">
+                <i class="fas fa-search empty-icon"></i>
+                <h3 class="text-primary" style="margin-bottom: 8px;">No products found</h3>
+                <p class="text-secondary" style="margin-bottom: 20px;">Try adjusting your search or filters to find what you're looking for.</p>
+                <a href="{% url 'chopee:home' %}" class="premium-btn">Clear All Filters</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Product Detail Modal Overlay & Window -->
+<div class="modal-overlay" id="product-modal-overlay"></div>
+<div class="product-detail-modal" id="product-detail-modal">
+    <button class="close-modal-btn" id="close-detail-btn"><i class="fas fa-times"></i></button>
+    <div class="modal-body-content" id="modal-product-content">
+        <!-- Dynamically populated by JS API call -->
+        <div class="loading-spinner">
+            <i class="fas fa-circle-notch fa-spin text-brand"></i> Loading details...
+        </div>
+    </div>
+</div>
+{% endblock %}
